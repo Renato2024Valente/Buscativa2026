@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+  <h2 class="mb-0">🚨 Buscativas</h2>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="/frequencia">Voltar para Frequência</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card rounded-4 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex flex-wrap gap-2 align-items-end justify-content-between mb-2">
+          <div class="flex-grow-1">
+            <label class="form-label">Turma</label>
+            <input id="filtroTurmaB" class="form-control" placeholder="Ex: 2A, 3B... (vazio = todas)">
+          </div>
+          <div>
+            <label class="form-label">Status</label>
+            <select id="filtroStatus" class="form-select">
+              <option value="pendente" selected>Pendente</option>
+              <option value="feita">Feita</option>
+              <option value="cancelada">Cancelada</option>
+              <option value="">Todas</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Semana (início)</label>
+            <input id="filtroSemanaB" class="form-control" type="date">
+          </div>
+          <div>
+            <button id="btnAtualizarB" class="btn btn-outline-primary">Atualizar</button>
+          </div>
+        </div>
+
+        <div id="alertPendentes" class="alert alert-danger d-none" role="alert">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+              <b>Atenção!</b> Existem buscativas <b>pendentes</b> (frequência abaixo de 80%).
+            </div>
+            <button class="btn btn-sm btn-light" id="btnBeep">🔔 Testar aviso</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-middle table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th>Status</th>
+                <th>Turma</th>
+                <th>Aluno</th>
+                <th>Semana</th>
+                <th class="text-end">Freq.</th>
+                <th>Professor</th>
+                <th>Sucesso</th>
+                <th>Observações</th>
+                <th class="text-end">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyBuscativas"></tbody>
+          </table>
+        </div>
+
+        <div class="small text-secondary">
+          Para registrar a buscativa, clique em <b>Registrar</b> (apenas quando estiver <b>pendente</b>).
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalRegistrar" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Registrar Buscativa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2 text-secondary small" id="modalInfo"></div>
+
+        <form id="formRegistrar" class="vstack gap-2">
+          <input type="hidden" name="buscativa_id" id="buscativaId">
+
+          <div>
+            <label class="form-label">Seu nome (professor)</label>
+            <input class="form-control" name="professor_nome" id="professorNome" placeholder="Digite seu nome" required>
+          </div>
+
+          <div>
+            <label class="form-label">Teve sucesso?</label>
+            <div class="d-flex gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="sucesso" id="sucessoSim" value="true" required>
+                <label class="form-check-label" for="sucessoSim">Sim</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="sucesso" id="sucessoNao" value="false" required>
+                <label class="form-check-label" for="sucessoNao">Não</label>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Observações</label>
+            <textarea class="form-control" name="observacoes" id="observacoes" rows="4" placeholder="Relate o que foi feito, contato, retorno, encaminhamentos..."></textarea>
+          </div>
+
+          <div id="msgModal" class="alert d-none mb-0" role="alert"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">Cancelar</button>
+        <button class="btn btn-primary" id="btnSalvarRegistro" type="button">Salvar registro</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/buscativa.js') }}"></script>
+{% endblock %}

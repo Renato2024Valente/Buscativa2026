@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero rounded-4 p-4 p-md-5 shadow-sm">
+  <div class="row align-items-center g-4">
+    <div class="col-md-7">
+      <h1 class="display-6 fw-bold mb-2">Frequência semanal + Buscativa automática</h1>
+      <p class="lead mb-3">
+        Registre a frequência da turma. Se um aluno ficar <span class="badge bg-danger">abaixo de 80%</span>,
+        o sistema cria uma buscativa pendente e dispara alerta visual na página de Buscativa.
+      </p>
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-primary btn-lg" href="/frequencia">➡️ Ir para Frequência</a>
+        <a class="btn btn-outline-light btn-lg" href="/buscativa">🚨 Ver Buscativas</a>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="card border-0 rounded-4">
+        <div class="card-body">
+          <h5 class="fw-bold">Como funciona</h5>
+          <ol class="mb-0">
+            <li>Você alimenta a frequência semanal (aulas + faltas).</li>
+            <li>Se &lt; 80%, entra automaticamente em <b>Buscativa Pendente</b>.</li>
+            <li>O professor registra a buscativa (sucesso, observações, nome).</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

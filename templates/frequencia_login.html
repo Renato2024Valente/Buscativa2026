@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-5">
+    <div class="card rounded-4 shadow-sm">
+      <div class="card-body p-4">
+        <h3 class="fw-bold mb-2">🔒 Acesso à Frequência</h3>
+        <p class="text-secondary mb-3">Digite a senha para entrar.</p>
+
+        <form id="formLogin" class="vstack gap-2">
+          <input type="hidden" id="nextUrl" value="{{ next_url if next_url else '/painel_frequencia' }}">
+          <div>
+            <label class="form-label">Senha</label>
+            <input class="form-control" type="password" id="senha" placeholder="admin123##" required>
+          </div>
+
+          <button class="btn btn-primary mt-2" type="submit">Entrar</button>
+
+          <div id="msgLogin" class="alert d-none mt-3 mb-0" role="alert"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  const form = document.getElementById("formLogin");
+  const senha = document.getElementById("senha");
+  const msg = document.getElementById("msgLogin");
+  const nextUrl = document.getElementById("nextUrl").value || "/painel_frequencia";
+
+  function show(kind, text){
+    msg.classList.remove("d-none","alert-success","alert-danger","alert-warning","alert-info");
+    msg.classList.add("alert", `alert-${kind}`);
+    msg.textContent = text;
+  }
+
+  form.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const pw = (senha.value || "").trim();
+    if(!pw) return;
+
+    try{
+      const res = await fetch("/api/auth/frequencia", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({password: pw})
+      });
+      const data = await res.json();
+      if(!data.ok){
+        show("danger", data.error || "Senha incorreta.");
+        return;
+      }
+      window.location.href = nextUrl;
+    }catch(err){
+      show("danger", "Falha de conexão com o servidor.");
+    }
+  });
+})();
+</script>
+{% endblock %}
