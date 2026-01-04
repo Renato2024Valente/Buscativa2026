@@ -18,8 +18,7 @@
 
     <div class="collapse navbar-collapse" id="navMain">
       <ul class="navbar-nav ms-auto">
-      
-        <li class="nav-item"><a class="nav-link" href="/gestao_frequencia">Gestão Frequência</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/gestao_frequencia">Gestão Frequência</a></li>
         <li class="nav-item"><a class="nav-link" href="/buscativa">Buscativa</a></li>
       </ul>
       {% if session.get('freq_auth') %}
@@ -38,7 +37,7 @@
 
 <footer class="py-4 text-center text-secondary small">
   <div class="container">
-    <div>Renato Valente • Sistema integrado (Frequência & Buscativa)</div>
+    <div>Bicudo-2026 • Sistema integrado (Frequência & Buscativa)</div>
   </div>
 </footer>
 
@@ -51,7 +50,7 @@
   if(!btn) return;
   btn.addEventListener('click', async ()=>{
     try{ await fetch('/api/auth/logout', {method:'POST'}); }catch(e){}
-    window.location.href = '/frequencia';
+    window.location.href = '/gestao_frequencia';
   });
 })();
 </script>

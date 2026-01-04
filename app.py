@@ -123,8 +123,14 @@ def create_app():
 
     @app.get("/gestao_frequencia")
     def page_gestao_frequencia():
+        # Sempre pede senha ao acessar Gestão Frequência
+        session.pop("freq_auth", None)
+        return render_template("frequencia_login.html", next_url="/gestao_frequencia_painel")
+
+    @app.get("/gestao_frequencia_painel")
+    def page_gestao_frequencia_painel():
         if not session.get("freq_auth"):
-            return render_template("frequencia_login.html", next_url="/gestao_frequencia")
+            return render_template("frequencia_login.html", next_url="/gestao_frequencia_painel")
         return render_template("gestao_frequencia.html")
 
     @app.get("/buscativa")
@@ -411,6 +417,9 @@ def create_app():
 
     @app.get("/api/turmas")
     def api_turmas():
+        auth = require_freq_auth()
+        if auth:
+            return auth
         turmas = [t[0] for t in db.session.query(Aluno.turma).distinct().order_by(Aluno.turma.asc()).all()]
         return jsonify({"ok": True, "data": turmas})
 

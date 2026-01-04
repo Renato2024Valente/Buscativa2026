@@ -6,10 +6,56 @@
     <button class="btn btn-outline-light" id="btnCalc" type="button" data-bs-toggle="modal" data-bs-target="#modalCalc">🧮 Calculadora</button>
     <a class="btn btn-outline-info" href="https://gemini.google.com/" target="_blank" rel="noopener">🤖 Gemini IA</a>
     <button class="btn btn-outline-danger" id="btnDeletar" type="button">🗑️ Deletar selecionados</button>
-    <a class="btn btn-outline-secondary" href="/frequencia">Voltar</a>
+    <a class="btn btn-outline-secondary" href="/buscativa">Voltar</a>
   </div>
 </div>
 
+<!-- LANÇAMENTO -->
+<div class="card rounded-4 shadow-sm mb-3">
+  <div class="card-body">
+    <h5 class="fw-bold mb-3">📌 Lançar frequência (gera % automaticamente)</h5>
+
+    <form id="formFrequencia" class="row g-2 align-items-end">
+      <div class="col-lg-2 col-md-4">
+        <label class="form-label">Turma</label>
+        <input class="form-control" name="turma" placeholder="Ex: 2A" required>
+      </div>
+
+      <div class="col-lg-4 col-md-8">
+        <label class="form-label">Nome do aluno</label>
+        <input class="form-control" name="nome" placeholder="Nome completo" required>
+      </div>
+
+      <div class="col-lg-2 col-md-4">
+        <label class="form-label">RA (opcional)</label>
+        <input class="form-control" name="ra" placeholder="000112...">
+      </div>
+
+      <div class="col-lg-2 col-md-4">
+        <label class="form-label">Semana (início)</label>
+        <input class="form-control" type="date" name="semana_inicio" id="semana_inicio" required>
+      </div>
+
+      <div class="col-lg-1 col-md-2">
+        <label class="form-label">Aulas</label>
+        <input class="form-control" type="number" name="total_aulas" id="total_aulas" min="1" required>
+      </div>
+
+      <div class="col-lg-1 col-md-2">
+        <label class="form-label">Faltas</label>
+        <input class="form-control" type="number" name="faltas" id="faltas" min="0" required>
+      </div>
+
+      <div class="col-12 d-flex flex-wrap gap-2 align-items-center mt-2">
+        <button class="btn btn-primary" type="submit">Salvar</button>
+        <div id="prevFreq" class="small text-secondary"></div>
+        <div id="msgBox" class="alert d-none mb-0" role="alert" style="flex:1; min-width: 260px;"></div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- LISTAGEM / FILTROS -->
 <div class="card rounded-4 shadow-sm">
   <div class="card-body">
     <div class="d-flex flex-wrap gap-2 align-items-end justify-content-between mb-2">
@@ -22,11 +68,9 @@
         <input id="filtroSemana" class="form-control" type="date">
       </div>
       <div>
-        <button id="btnAtualizar" class="btn btn-outline-primary">Atualizar</button>
+        <button id="btnAtualizar" class="btn btn-outline-primary" type="button">Atualizar</button>
       </div>
     </div>
-
-    <div id="msgBox" class="alert d-none mt-2" role="alert"></div>
 
     <div class="table-responsive">
       <table class="table align-middle table-hover">
@@ -47,6 +91,7 @@
     </div>
 
     <div class="small text-secondary">
+      <span class="badge bg-danger">Abaixo de 80%</span> cria/atualiza automaticamente a buscativa como <b>pendente</b>.
       A exclusão pede senha <b>admin123##</b> (ou a que estiver em <code>ADMIN_PASSWORD</code> no Render).
     </div>
   </div>

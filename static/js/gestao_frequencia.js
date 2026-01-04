@@ -1,5 +1,9 @@
 (function(){
+  const form = document.getElementById("formFrequencia");
   const msgBox = document.getElementById("msgBox");
+  const prevFreq = document.getElementById("prevFreq");
+  const inpAulas = document.getElementById("total_aulas");
+  const inpFaltas = document.getElementById("faltas");
   const tbody = document.getElementById("tbodyFrequencias");
   const filtroTurma = document.getElementById("filtroTurma");
   const filtroSemana = document.getElementById("filtroSemana");
@@ -8,11 +12,27 @@
   const chkAll = document.getElementById("chkAll");
 
   function showMsg(kind, text){
+    if(!msgBox) return;
     msgBox.classList.remove("d-none","alert-success","alert-danger","alert-warning","alert-info");
     msgBox.classList.add("alert", `alert-${kind}`);
     msgBox.textContent = text;
   }
-  function hideMsg(){ msgBox.classList.add("d-none"); }
+
+function updatePreview(){
+  if(!prevFreq) return;
+  const aulas = Number(inpAulas?.value || 0);
+  const faltas = Number(inpFaltas?.value || 0);
+  if(!aulas || aulas <= 0){
+    prevFreq.textContent = "";
+    return;
+  }
+  const presencas = Math.max(0, aulas - Math.max(0, faltas));
+  const pct = Math.round((presencas / aulas) * 10000) / 100;
+  const warn = pct < 80 ? "⚠️ Abaixo de 80% (vai para BUSCATIVA)" : "✅ OK";
+  prevFreq.innerHTML = `Frequência prevista: <b>${pct.toFixed(2)}%</b> — ${warn}`;
+}
+
+  function hideMsg(){ if(msgBox) msgBox.classList.add("d-none"); }
 
   function badge(status){
     if(!status) return "";
@@ -46,8 +66,8 @@
   }
 
   async function load(){
-    const turma = (filtroTurma.value || "").trim();
-    const semana_inicio = (filtroSemana.value || "").trim();
+    const turma = (filtroTurma?.value || "").trim();
+    const semana_inicio = (filtroSemana?.value || "").trim();
 
     const params = new URLSearchParams();
     if(turma) params.set("turma", turma);
@@ -68,6 +88,42 @@
     `;
   }
 
+  // Salvar frequência (lançamento)
+  if(form){
+    form.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+      payload.total_aulas = Number(payload.total_aulas);
+      payload.faltas = Number(payload.faltas);
+
+      try{
+        const res = await fetch("/api/frequencias", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(!data.ok){
+          showMsg("danger", data.error || "Erro ao salvar.");
+          return;
+        }
+
+        if(data.frequencia.abaixo_80){
+          showMsg("warning", `Salvo! ⚠️ ${data.frequencia.aluno.nome} ficou com ${data.frequencia.frequencia_percent}% e entrou em BUSCATIVA PENDENTE.`);
+        }else{
+          showMsg("success", "Salvo com sucesso!");
+        }
+
+        await load();
+        form.faltas.value = "";
+        form.total_aulas.value = "";
+      }catch(err){
+        showMsg("danger", "Falha de conexão com o servidor.");
+      }
+    });
+  }
+
   // Selecionar todos
   if(chkAll){
     chkAll.addEventListener("change", ()=>{
@@ -86,7 +142,7 @@
       }
 
       const pw = prompt("Digite a senha para DELETAR os registros selecionados:", "");
-      if(pw === null) return; // cancel
+      if(pw === null) return;
       const password = (pw || "").trim();
       if(!password){
         showMsg("danger", "Senha obrigatória para deletar.");
@@ -118,12 +174,22 @@
     });
   }
 
-  btnAtualizar.addEventListener("click", load);
+  if(btnAtualizar){
+    btnAtualizar.addEventListener("click", load);
+  }
 
-  if(!filtroSemana.value){
-    const d = new Date();
-    const iso = new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
-    filtroSemana.value = iso;
+  // Prévia de porcentagem
+  if(inpAulas) inpAulas.addEventListener('input', updatePreview);
+  if(inpFaltas) inpFaltas.addEventListener('input', updatePreview);
+  updatePreview();
+
+  // Datas padrão
+  const todayIso = new Date(Date.now() - (new Date().getTimezoneOffset()*60000)).toISOString().slice(0,10);
+  if(document.getElementById("semana_inicio") && !document.getElementById("semana_inicio").value){
+    document.getElementById("semana_inicio").value = todayIso;
+  }
+  if(filtroSemana && !filtroSemana.value){
+    filtroSemana.value = todayIso;
   }
 
   load();
