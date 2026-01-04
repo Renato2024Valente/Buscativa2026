@@ -82,3 +82,38 @@ body{
   grid-template-columns: repeat(4, 1fr);
   gap: .5rem;
 }
+
+
+
+/* Tabela mais escura (melhor leitura) */
+.table{
+  color: #e8eefc;
+}
+
+.table > :not(caption) > * > *{
+  background-color: rgba(0,0,0,0.28) !important;
+  color: #e8eefc !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+
+.table thead.table-dark > :not(caption) > * > *{
+  background-color: rgba(0,0,0,0.55) !important;
+  color: #e8eefc !important;
+}
+
+.table-hover > tbody > tr:hover > *{
+  background-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Texto secundário mais visível dentro da tabela */
+.table .text-secondary,
+.table small.text-secondary{
+  color: rgba(232,238,252,0.72) !important;
+}
+
+/* Caixa do modal de observações mais escura e legível */
+#modalObs .border{
+  border-color: rgba(255,255,255,0.14) !important;
+  background: rgba(0,0,0,0.25) !important;
+  color: #e8eefc !important;
+}

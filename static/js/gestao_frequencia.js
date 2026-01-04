@@ -42,6 +42,54 @@ function updatePreview(){
     return "";
   }
 
+
+function fmtDate(iso){
+  if(!iso) return "—";
+  try{
+    const d = new Date(iso);
+    return d.toLocaleString();
+  }catch(e){
+    return iso;
+  }
+}
+
+function shortText(t, max=60){
+  if(!t) return "";
+  const s = String(t).trim().replace(/\s+/g, " ");
+  if(s.length <= max) return s;
+  return s.slice(0, max-1) + "…";
+}
+
+function renderObs(f){
+  const b = f.buscativa;
+  if(!b) return `<span class="text-secondary small">—</span>`;
+
+  const prof = b.professor_nome ? b.professor_nome : "—";
+  const res = (b.sucesso === true) ? "Sucesso" : (b.sucesso === false ? "Sem sucesso" : "—");
+  const obs = b.observacoes ? shortText(b.observacoes, 70) : "";
+  const showBtn = b.observacoes || b.professor_nome || b.sucesso !== null;
+
+  if(!showBtn){
+    return `<span class="text-secondary small">—</span>`;
+  }
+
+  return `
+    <div class="vstack gap-1">
+      <div class="small text-secondary">Prof.: ${prof}</div>
+      <div class="small">${res}${obs ? ` — <span class="text-secondary">${obs}</span>` : ""}</div>
+      <button class="btn btn-sm btn-outline-light btn-obs" type="button"
+        data-aluno="${encodeURIComponent(f.aluno.nome)}"
+        data-turma="${encodeURIComponent(f.aluno.turma)}"
+        data-prof="${encodeURIComponent(prof)}"
+        data-res="${encodeURIComponent(res)}"
+        data-obs="${encodeURIComponent(b.observacoes || '')}"
+        data-criada="${encodeURIComponent(b.data_criacao || '')}"
+        data-realizada="${encodeURIComponent(b.data_realizada || '')}"
+      >Ver</button>
+    </div>
+  `;
+}
+
   function row(f){
     const below = f.abaixo_80;
     const b = f.buscativa;
@@ -61,6 +109,7 @@ function updatePreview(){
         <td class="text-end">${f.faltas}</td>
         <td class="text-end"><span class="fw-bold">${Number(f.frequencia_percent).toFixed(2)}%</span></td>
         <td>${statusTxt}</td>
+        <td>${renderObs(f)}</td>
       </tr>
     `;
   }
@@ -78,13 +127,13 @@ function updatePreview(){
 
     if(!data.ok){
       showMsg("danger", data.error || "Erro ao carregar.");
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center text-secondary">Sem dados.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" class="text-center text-secondary">Sem dados.</td></tr>`;
       return;
     }
 
     hideMsg();
     tbody.innerHTML = (data.data || []).map(row).join("") || `
-      <tr><td colspan="8" class="text-center text-secondary">Nenhum registro encontrado.</td></tr>
+      <tr><td colspan="9" class="text-center text-secondary">Nenhum registro encontrado.</td></tr>
     `;
   }
 
@@ -191,6 +240,44 @@ function updatePreview(){
   if(filtroSemana && !filtroSemana.value){
     filtroSemana.value = todayIso;
   }
+
+
+// Abrir modal de observações da buscativa
+document.addEventListener("click", (e)=>{
+  const btn = e.target.closest(".btn-obs");
+  if(!btn) return;
+
+  const aluno = decodeURIComponent(btn.getAttribute("data-aluno") || "—");
+  const turma = decodeURIComponent(btn.getAttribute("data-turma") || "");
+  const prof = decodeURIComponent(btn.getAttribute("data-prof") || "—");
+  const res = decodeURIComponent(btn.getAttribute("data-res") || "—");
+  const obs = decodeURIComponent(btn.getAttribute("data-obs") || "");
+  const criada = decodeURIComponent(btn.getAttribute("data-criada") || "");
+  const realizada = decodeURIComponent(btn.getAttribute("data-realizada") || "");
+
+  const elAluno = document.getElementById("obsAluno");
+  const elProf = document.getElementById("obsProfessor");
+  const elRes = document.getElementById("obsResultado");
+  const elTxt = document.getElementById("obsTexto");
+  const elCriada = document.getElementById("obsCriada");
+  const elReal = document.getElementById("obsRealizada");
+
+  if(elAluno) elAluno.textContent = turma ? `${aluno} (${turma})` : aluno;
+  if(elProf) elProf.textContent = prof || "—";
+  if(elRes) elRes.textContent = res || "—";
+  if(elTxt) elTxt.textContent = obs ? obs : "—";
+  if(elCriada) elCriada.textContent = fmtDate(criada);
+  if(elReal) elReal.textContent = fmtDate(realizada);
+
+  try{
+    const modalEl = document.getElementById("modalObs");
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }catch(err){
+    // fallback
+    alert(obs || "Sem observações.");
+  }
+});
 
   load();
 })();

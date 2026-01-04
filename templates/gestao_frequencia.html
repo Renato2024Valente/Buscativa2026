@@ -84,6 +84,7 @@
             <th class="text-end">Faltas</th>
             <th class="text-end">Freq.</th>
             <th>Status</th>
+            <th>Obs. Buscativa</th>
           </tr>
         </thead>
         <tbody id="tbodyFrequencias"></tbody>
@@ -93,6 +94,48 @@
     <div class="small text-secondary">
       <span class="badge bg-danger">Abaixo de 80%</span> cria/atualiza automaticamente a buscativa como <b>pendente</b>.
       A exclusão pede senha <b>admin123##</b> (ou a que estiver em <code>ADMIN_PASSWORD</code> no Render).
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal: Observações da Buscativa -->
+<div class="modal fade" id="modalObs" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">📝 Detalhes da Buscativa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="small text-secondary">Aluno</div>
+            <div class="fw-semibold" id="obsAluno">—</div>
+          </div>
+          <div class="col-md-3">
+            <div class="small text-secondary">Professor</div>
+            <div class="fw-semibold" id="obsProfessor">—</div>
+          </div>
+          <div class="col-md-3">
+            <div class="small text-secondary">Resultado</div>
+            <div class="fw-semibold" id="obsResultado">—</div>
+          </div>
+          <div class="col-12">
+            <div class="small text-secondary">Observações</div>
+            <div class="p-3 rounded-3 border" id="obsTexto" style="min-height:120px; white-space:pre-wrap;">—</div>
+          </div>
+          <div class="col-md-6">
+            <div class="small text-secondary">Criada em</div>
+            <div class="fw-semibold" id="obsCriada">—</div>
+          </div>
+          <div class="col-md-6">
+            <div class="small text-secondary">Realizada em</div>
+            <div class="fw-semibold" id="obsRealizada">—</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
